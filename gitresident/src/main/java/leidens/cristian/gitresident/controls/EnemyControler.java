@@ -24,7 +24,7 @@ public class EnemyControler {
 
         enemie2.setName("Licker");
         enemie2.setAtack("Claw, Tongue, Jump claw");
-        enemie2.setVirusType("T-Virus Type");
+        enemie2.setVirusType("V-ACT T-Virus Type");
         enemies.register(enemie2);
     }
 
