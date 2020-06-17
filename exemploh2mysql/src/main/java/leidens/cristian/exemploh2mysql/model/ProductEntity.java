@@ -39,6 +39,6 @@ public class ProductEntity {
 
     @Column(name = "price")
     @NotNull(message = "Can't price empty")
-    private double income;
+    private double price;
 
 }

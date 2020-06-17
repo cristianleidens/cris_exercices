@@ -12,4 +12,4 @@ CREATE TABLE product (
          id_product BIGINT AUTO_INCREMENT NOT NULL,
          name VARCHAR(255) NULL,
          price DOUBLE NULL,
-         PRIMARY KEY (id_client));
+         PRIMARY KEY (id_product));

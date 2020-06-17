@@ -1,8 +1,7 @@
 package leidens.cristian.exemploh2mysql.controller;
 
-import leidens.cristian.exemploh2mysql.model.ClientEntity;
 import leidens.cristian.exemploh2mysql.model.ProductEntity;
-import leidens.cristian.exemploh2mysql.repository.ProductRepository;
+import leidens.cristian.exemploh2mysql.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -13,25 +12,39 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/products")
 
 public class ProductController {
 
     @Autowired
-    private ProductRepository productRepository;
+    private ProductFindAllService productFindAllService;
+
+    @Autowired
+    private ProductFindByIdService productFindByIdService;
+
+    @Autowired
+    private ProductSaveService productSaveService;
+
+    @Autowired
+    private ProductUpdateService productUpdateService;
+
+    @Autowired
+    private ProductDeleteService productDeleteService;
 
     @GetMapping
     public ResponseEntity<List<ProductEntity>> findAll() {
         return new ResponseEntity<List<ProductEntity>>(
-                (List<ProductEntity>)this.productRepository.findAll(),
+                this.productFindAllService.findAll(),
                 new HttpHeaders(),
                 HttpStatus.OK);
     }
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<ProductEntity> findById(@PathVariable("id") long id) {
-        if(this.productRepository.findById(id).isPresent()) {
-            return new ResponseEntity<ProductEntity>(this.productRepository.findById(id).get() ,new HttpHeaders(),HttpStatus.OK);
+        ProductEntity productEntity = this.productFindByIdService.findById(id);
+        if(productEntity != null) {
+            return new ResponseEntity<ProductEntity>(productEntity ,new HttpHeaders(),HttpStatus.OK);
         }
         return new ResponseEntity<ProductEntity>(HttpStatus.NOT_FOUND);
     }
@@ -39,23 +52,20 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<ProductEntity> save(@Valid @RequestBody ProductEntity productEntity) {
         return new ResponseEntity<ProductEntity>(
-                this.productRepository.save(productEntity),new HttpHeaders(),HttpStatus.CREATED
+               this.productSaveService.save(productEntity) ,new HttpHeaders(),HttpStatus.CREATED
         );
     }
 
-    @PutMapping(path = "/{id}")
-    public ResponseEntity<ProductEntity> update(@PathVariable("id") long id, @RequestBody ProductEntity productEntity) throws Exception{
-        if(id == 0 || this.productRepository.existsById(id)) {
-            throw new Exception("Code not found");
-        }
-
+    @PutMapping
+    public ResponseEntity<ProductEntity> update(@RequestBody ProductEntity productEntity) throws Exception{
         return new ResponseEntity<ProductEntity>(
-                this.productRepository.save(productEntity),new HttpHeaders(), HttpStatus.OK
+                this.productUpdateService.update(productEntity),new HttpHeaders(), HttpStatus.OK
         );
     }
 
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<ProductEntity> delete(@PathVariable("id") long id) {
+        this.productDeleteService.delete(id);
         return new ResponseEntity<ProductEntity>(new HttpHeaders(), HttpStatus.OK);
     }
 
